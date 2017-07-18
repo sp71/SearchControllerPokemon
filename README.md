@@ -10,3 +10,6 @@
 - Language: Swift
 - iOS Version: 8.0 and above
 - Xcode
+
+# Updates
+- Project updated to Swift 3

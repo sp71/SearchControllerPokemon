@@ -10,10 +10,10 @@ import UIKit
 
 class ViewController: UIViewController {
     
-    private let reuseCellIdentifier = "reuseCellIdentifier"
-    private let pokemonList = PokemonDataSource.createList()
-    private let searchController = UISearchController(searchResultsController: nil)
-    private var filteredPokemonList = [Pokemon]()
+    fileprivate let reuseCellIdentifier = "reuseCellIdentifier"
+    fileprivate let pokemonList = PokemonDataSource.createList()
+    fileprivate let searchController = UISearchController(searchResultsController: nil)
+    fileprivate var filteredPokemonList = [Pokemon]()
     @IBOutlet weak var tableView: UITableView!
 
 
@@ -31,7 +31,7 @@ class ViewController: UIViewController {
         searchController.searchBar.delegate = self
     }
     
-    func filterSearchController(searchBar: UISearchBar) {
+    func filterSearchController(_ searchBar: UISearchBar) {
         guard let scopeString = searchBar.scopeButtonTitles?[searchBar.selectedScopeButtonIndex] else { return }
         let selectedElement = Pokemon.Element(rawValue: scopeString) ?? .All
         let searchText = searchBar.text ?? ""
@@ -39,7 +39,7 @@ class ViewController: UIViewController {
         // filter pokemonList by element and text
         filteredPokemonList = pokemonList.filter { pokemon in
             let isElementMatching = (selectedElement == .All) || (pokemon.element == selectedElement)
-            let isMatchingSearchText = pokemon.name.lowercaseString.containsString(searchText.lowercaseString) || searchText.lowercaseString.characters.count == 0
+            let isMatchingSearchText = pokemon.name.lowercased().contains(searchText.lowercased()) || searchText.lowercased().characters.count == 0
             return isElementMatching && isMatchingSearchText
         }
         
@@ -50,24 +50,24 @@ class ViewController: UIViewController {
 
 extension ViewController : UITableViewDataSource {
 
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier(reuseCellIdentifier, forIndexPath: indexPath)
-        let pokemon = searchController.active ? filteredPokemonList[indexPath.row] : pokemonList[indexPath.row]
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: reuseCellIdentifier, for: indexPath)
+        let pokemon = searchController.isActive ? filteredPokemonList[indexPath.row] : pokemonList[indexPath.row]
         cell.textLabel!.text = pokemon.name
         cell.detailTextLabel?.text = pokemon.element.rawValue
         cell.imageView!.image = pokemon.image
         return cell
     }
     
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return searchController.active ? filteredPokemonList.count : pokemonList.count
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return searchController.isActive ? filteredPokemonList.count : pokemonList.count
     }
 
 }
 
 extension ViewController : UISearchResultsUpdating {
     
-    func updateSearchResultsForSearchController(searchController: UISearchController) {
+    func updateSearchResults(for searchController: UISearchController) {
          filterSearchController(searchController.searchBar)
     }
     
@@ -75,7 +75,7 @@ extension ViewController : UISearchResultsUpdating {
 
 extension ViewController : UISearchBarDelegate {
     
-    func searchBar(searchBar: UISearchBar, selectedScopeButtonIndexDidChange selectedScope: Int) {
+    func searchBar(_ searchBar: UISearchBar, selectedScopeButtonIndexDidChange selectedScope: Int) {
         filterSearchController(searchBar)
     }
     
